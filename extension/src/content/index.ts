@@ -5,56 +5,8 @@
  * Privacy Guarantee: NEVER reads input values, passwords, keystrokes, or cookies.
  */
 
-interface DOMFeatureVector {
-  numForms: number;
-  numPasswordFields: number;
-  hasLoginForm: boolean;
-  hasPaymentForm: boolean;
-  paymentFieldCount: number;
-  crossOriginFormAction: boolean;
-  crossDomainFormActions?: number;
-  insecureFormAction: boolean;
-  insecureFormActions?: number;
-  formActionDomains: string[];
-  externalResourceRatio: number;
-  externalScriptCount: number;
-  totalScriptCount: number;
-  hasDataUriScript: boolean;
-  brandMismatchDetected: boolean;
-  detectedBrandClaim?: string;
-  hiddenIframeCount: number;
-  suspiciousIframeCount: number;
-  title: string;
-  origin: string;
-  scriptOrigins?: string[];
-  iframeOrigins?: string[];
-}
-
-interface ExtensionMessage {
-  type: string;
-  payload?: any;
-  url?: string;
-}
-
-// High-value brand names frequently impersonated in phishing attacks
-const TARGETED_BRANDS = [
-  'paypal',
-  'microsoft',
-  'google',
-  'apple',
-  'netflix',
-  'amazon',
-  'bank of america',
-  'chase',
-  'wellsfargo',
-  'citibank',
-  'facebook',
-  'instagram',
-  'dhl',
-  'fedex',
-  'usps',
-  'ups',
-];
+import { TARGETED_BRANDS } from '../shared/constants.js';
+import type { DOMFeatureVector, ExtensionMessage } from '../shared/types.js';
 
 let lastScanTime = 0;
 let lastFeaturesCache: DOMFeatureVector | null = null;

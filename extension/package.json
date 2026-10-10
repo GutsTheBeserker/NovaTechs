@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "tsc",
+    "build:content": "esbuild src/content/index.ts --bundle --format=iife --target=es2022 --outfile=dist/content/index.js",
+    "build": "tsc && npm run build:content",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.280",
     "@types/node": "^22.0.0",
+    "esbuild": "^0.21.5",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   }
