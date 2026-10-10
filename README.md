@@ -1,185 +1,48 @@
-# 🛡️ PhishGuard AI — Adaptive Phishing Detection Browser Extension
+# 🛡️ PhishGuard AI — Adaptive Phishing Detection
 
-<p align="center">
-  <strong>Real-Time Phishing Detection • Explainable Risk Scoring • Privacy-First Security</strong>
-</p>
+\<p align="center">
+&#x20; \<strong>Detect Phishing. Browse Safely. Protect Your Privacy.\</strong>
+\</p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Chrome-Manifest%20V3-blue?logo=googlechrome" alt="Chrome Manifest V3">
-  <img src="https://img.shields.io/badge/Backend-Python%20%7C%20Flask-green?logo=python" alt="Python Flask">
-  <img src="https://img.shields.io/badge/Frontend-TypeScript-blue?logo=typescript" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Testing-Vitest%20%7C%20Pytest-orange" alt="Testing">
-  <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="MIT License">
-</p>
+\<p align="center">
+&#x20; \<img src="[https://img.shields.io/badge/Chrome-Manifest%20V3-blue?logo=googlechrome](https://img.shields.io/badge/Chrome-Manifest%20V3-blue?logo=googlechrome)" alt="Chrome">
+&#x20; \<img src="[https://img.shields.io/badge/Python-Flask-green?logo=python](https://img.shields.io/badge/Python-Flask-green?logo=python)" alt="Python">
+&#x20; \<img src="[https://img.shields.io/badge/TypeScript-Extension-blue?logo=typescript](https://img.shields.io/badge/TypeScript-Extension-blue?logo=typescript)" alt="TypeScript">
+&#x20; \<img src="[https://img.shields.io/badge/License-MIT-lightgrey](https://img.shields.io/badge/License-MIT-lightgrey)" alt="MIT License">
+\</p>
 
-**PhishGuard AI** is an explainable, privacy-conscious browser security project designed to identify potentially dangerous phishing websites using multiple security signals instead of relying exclusively on static blocklists.
+## 🚀 About
 
-The project combines a Chromium Manifest V3 browser extension, deterministic security heuristics, passive DOM analysis, and a Python Flask backend architecture. Its goal is to detect suspicious websites, explain why they may be dangerous, and help users make safer browsing decisions.
+**PhishGuard AI** is a privacy-focused browser extension designed to detect potentially malicious and phishing websites using real-time security signals, intelligent heuristics, and explainable risk scoring.
 
-> **Project status:** Phase 1 — Scaffolding and core contracts. Refer to the actual implementation and test results before claiming production readiness or complete zero-day detection.
-
----
-
-## 📌 Table of Contents
-
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [How It Works](#-how-it-works)
-- [Architecture](#-architecture)
-- [Technology Stack](#-technology-stack)
-- [Project Structure](#-project-structure)
-- [Prerequisites](#-prerequisites)
-- [Installation and Setup](#-installation-and-setup)
-- [Loading the Browser Extension](#-loading-the-browser-extension)
-- [Backend API](#-backend-api)
-- [Risk Scoring](#-risk-scoring)
-- [Testing and Verification](#-testing-and-verification)
-- [Privacy and Security](#-privacy-and-security)
-- [Screenshots and Demo](#-screenshots-and-demo)
-- [Limitations](#-limitations)
-- [Future Improvements](#-future-improvements)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Disclaimer](#-disclaimer)
-
-## 🚀 Overview
-
-Phishing attacks often use deceptive URLs, lookalike domains, fake login pages, and misleading forms to steal credentials or financial information.
-
-Traditional blacklist-based solutions may fail to identify newly created phishing websites before they are reported.
-
-PhishGuard AI explores a complementary approach by evaluating multiple indicators of suspicious behavior and generating an explainable risk assessment.
-
-### Project Objectives
-
-- Identify suspicious URLs and domain characteristics.
-- Detect potentially deceptive domain names and homograph attacks.
-- Analyze webpage structure without reading user-entered credentials.
-- Identify suspicious form destinations and brand-domain mismatches.
-- Generate an understandable risk score from 0 to 100.
-- Display security findings through a browser extension popup.
-- Provide a backend API foundation for future machine-learning inference.
-- Minimize the transmission and collection of sensitive browsing information.
+Unlike traditional blacklist-only approaches, it analyzes suspicious URLs, domain characteristics, webpage structure, and form destinations to help identify potential threats.
 
 ## ✨ Key Features
 
-### 1. Multi-Signal Phishing Detection
+- 🔍 **Real-Time Detection** — Analyze suspicious website characteristics.
+- 🧠 **Explainable Risk Score** — Present a risk score from 0–100 with understandable reasons.
+- 🌐 **Domain Protection** — Identify potential Punycode and homograph attacks.
+- 🛡️ **Phishing Warnings** — Alert users to suspicious websites where warning functionality is implemented.
+- 🔒 **Privacy First** — Designed to avoid collecting passwords and sensitive form values.
+- ⚡ **Browser Integration** — Built using Chrome Extension Manifest V3.
+- 🤖 **ML-Ready Backend** — Python Flask API designed to support future machine-learning inference.
 
-Evaluate several indicators rather than depending on a single blacklist.
+## 🏗️ Tech Stack
 
-- Suspicious URL and domain patterns.
-- Punycode and potential homograph indicators.
-- Password field presence and form destinations.
-- Potential brand impersonation.
-- Domain allowlist checks.
-- Configurable deterministic risk scoring.
-
-### 2. Explainable Risk Assessment
-
-The scanner is designed to present a risk score from **0 to 100**, accompanied by human-readable explanations of the indicators that contributed to the assessment.
-
-| Risk score | Intended interpretation |
-|---|---|
-| 0–29 | Low risk |
-| 30–59 | Medium risk |
-| 60–79 | High risk |
-| 80–100 | Critical risk |
-
-*These ranges are illustrative defaults. Use the actual thresholds defined in the scoring implementation.*
-
-### 3. Browser Extension
-
-- Chromium extension built on Manifest V3.
-- Background service worker for security evaluation.
-- Content script for passive webpage structure analysis.
-- Popup interface for inspecting the current website.
-- Warning page for communicating detected threats, when implemented.
-
-### 4. Privacy-Conscious DOM Analysis
-
-The content script is designed to inspect structural indicators such as password field counts, form destinations, and potential brand mismatches.
-
-It must not read or transmit password values, form contents, or other sensitive user-entered information.
-
-### 5. Backend API Foundation
-
-A Python Flask service provides health-check and prediction endpoints, with input validation intended to prevent accidental submission of sensitive URL components.
-
-### 6. Automated Testing
-
-- Vitest tests for extension utilities and heuristics.
-- Pytest tests for backend contracts and security validation.
-- TypeScript type checking and build verification.
-
-## 🔍 How It Works
-
-The intended detection workflow follows these steps:
-
-1. **Page inspection:** The extension obtains the permitted URL and relevant webpage structural indicators.
-2. **Signal extraction:** It evaluates URL patterns, domain characteristics, form destinations, and other supported indicators.
-3. **Risk evaluation:** The scoring engine combines available signals using deterministic rules.
-4. **Threat explanation:** The extension prepares a risk score and explanations for the contributing factors.
-5. **User notification:** The popup displays the findings; blocking or interstitial navigation depends on the implemented enforcement logic.
-6. **Optional backend analysis:** A sanitized request can be sent to the backend when the relevant integration is enabled.
-
-The backend and browser extension should remain separated by a clearly defined API contract, with sensitive information excluded from requests.
-
-## 🏗️ Architecture
-
-```mermaid
-flowchart TD
-    A[Website Navigation] --> B[Browser Extension]
-    B --> C[URL and Domain Analysis]
-    B --> D[Passive DOM Analysis]
-    C --> E[Heuristic Scoring Engine]
-    D --> E
-    E --> F[Risk Score and Explanations]
-    F --> G[Scanner Popup]
-    F --> H[Warning Interface]
-    E -. Optional sanitized request .-> I[Flask Backend]
-    I --> J[Input Validation]
-    J --> K[Prediction Service]
-    K --> L[API Response]
-```
-
-### Client-Side Components
-
-- **Background service worker:** Coordinates analysis and evaluates supported security signals.
-- **Content script:** Collects limited structural information from the current page.
-- **Popup:** Displays the current site's assessment and contributing factors.
-- **Warning interface:** Provides a warning or navigation interstitial if enforcement is implemented.
-- **Shared utilities:** Define types, validation rules, and scoring contracts.
-
-### Backend Components
-
-- **Flask application:** Initializes the service and registers routes.
-- **Health endpoint:** Reports service availability.
-- **Prediction endpoint:** Defines the contract for threat prediction.
-- **Privacy validator:** Checks incoming request fields and URL sanitization.
-- **ML module:** Provides the foundation for future model training and inference.
-
-## 🧰 Technology Stack
-
-| Technology | Purpose |
-|---|---|
-| TypeScript | Extension logic and type safety |
-| Chrome Extension Manifest V3 | Browser integration |
-| HTML and CSS | Popup and warning interfaces |
-| Python | Backend implementation |
-| Flask | REST API |
-| pytest | Backend testing |
-| Vitest | Extension unit testing |
-| Node.js and npm | Dependency management and builds |
-| scikit-learn | Planned machine-learning functionality |
+| Technology         | Purpose                |
+| ------------------ | ---------------------- |
+| TypeScript         | Extension logic        |
+| HTML & CSS         | User interface         |
+| Chrome Manifest V3 | Browser integration    |
+| Python & Flask     | Backend API            |
+| Vitest & pytest    | Automated testing      |
+| scikit-learn       | Planned ML integration |
 
 ## 📂 Project Structure
 
 ```text
 adaptive-phishing-detection/
 ├── extension/
-│   ├── manifest.json
-│   ├── package.json
-│   ├── tsconfig.json
 │   ├── src/
 │   │   ├── background/
 │   │   ├── content/
@@ -187,371 +50,98 @@ adaptive-phishing-detection/
 │   │   ├── warning/
 │   │   └── shared/
 │   ├── public/
-│   │   └── icons/
 │   ├── tests/
-│   └── dist/
+│   └── manifest.json
 ├── backend/
 │   ├── app/
-│   │   ├── __init__.py
-│   │   ├── config.py
 │   │   ├── routes/
 │   │   ├── services/
 │   │   ├── security/
 │   │   └── ml/
 │   ├── tests/
-│   ├── scripts/
-│   ├── requirements.txt
-│   └── .env.example
-├── data/
-│   └── README.md
+│   └── requirements.txt
 ├── docs/
-│   ├── architecture.md
-│   ├── risk-scoring.md
-│   ├── privacy.md
-│   └── demo-script.md
-├── .gitignore
+├── data/
 └── README.md
 ```
 
-*The `dist/` directory is generated by the extension build process. The final directory structure should match the actual repository.*
+## ⚙️ Installation
 
-## ⚙️ Prerequisites
-
-Install the following tools before running the project:
-
-- Python 3.10 or later, subject to dependency compatibility.
-- Node.js 20 or later.
-- npm.
-- Google Chrome or another compatible Chromium browser.
-- Git, recommended for version control.
-
-Check your installed versions:
-
-```bash
-python --version
-node --version
-npm --version
-git --version
-```
-
-## 💻 Installation and Setup
-
-### Step 1: Clone the Repository
-
-Replace the placeholder with your actual GitHub repository URL.
+**1. Clone the repository**
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/adaptive-phishing-detection.git
 cd adaptive-phishing-detection
 ```
 
-### Step 2: Set Up the Backend
-
-Navigate to the backend directory:
+**2. Start the backend**
 
 ```bash
 cd backend
-```
-
-Create a virtual environment:
-
-```powershell
 python -m venv .venv
-```
-
-Activate it in Windows PowerShell:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-If PowerShell blocks activation, use Command Prompt instead:
-
-```bat
-.venv\Scripts\activate.bat
-```
-
-Install the dependencies:
-
-```bash
-python -m pip install --upgrade pip
+.venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-Run the backend tests:
-
-```bash
 pytest -v
-```
-
-Start the development server:
-
-```bash
 python scripts/run_dev.py
 ```
 
-The backend should be available at:
-
-`http://127.0.0.1:5000`
-
-Verify the health endpoint:
+Backend health check:
 
 `http://127.0.0.1:5000/api/v1/health`
 
-### Step 3: Build the Browser Extension
+**3. Build the extension**
 
-Open a new terminal and navigate to the project root:
+Open a new terminal:
 
 ```bash
 cd extension
-```
-
-Install dependencies:
-
-```bash
 npm install
-```
-
-Run the extension tests:
-
-```bash
 npm test
-```
-
-Build the extension:
-
-```bash
 npm run build
 ```
 
-If the build succeeds, locate the generated JavaScript and other required assets in `dist/`.
+**4. Load in Chrome**
 
-**Important:** Load the generated extension directory if the build configuration outputs a complete, loadable extension to `dist/`. If the project instead expects the root `extension/` directory, follow the actual build configuration and ensure the manifest and assets are present.
+1. Open `chrome://extensions/`.
+2. Enable **Developer mode**.
+3. Click **Load unpacked**.
+4. Select the directory containing the built extension's `manifest.json`.
 
-## 🌐 Loading the Browser Extension
+## 🔌 API Endpoints
 
-1. Open Google Chrome.
-2. Visit `chrome://extensions/`.
-3. Enable **Developer mode**.
-4. Click **Load unpacked**.
-5. Select the correct extension directory containing `manifest.json`.
-6. Pin the PhishGuard AI icon to the browser toolbar.
-7. Open a webpage and click the extension icon to inspect the available security assessment.
+| Method | Endpoint          | Purpose                     |
+| ------ | ----------------- | --------------------------- |
+| GET    | `/api/v1/health`  | Check backend status        |
+| POST   | `/api/v1/predict` | Threat prediction interface |
 
-### Recommended Verification
+The prediction endpoint's request format and ML capabilities depend on the current implementation.
 
-- Open a normal website and inspect the assessment.
-- Use a controlled local test page with a suspicious form structure.
-- Verify that risk factors are explained correctly.
-- Check that passwords and form values are never collected.
-- Inspect the extension service worker logs for errors.
-- Test the warning flow only on a controlled demonstration page.
+## 🔐 Privacy & Security
 
-Do not test by submitting credentials to suspicious websites.
+- Minimize the collection of browsing data.
+- Never collect or transmit passwords or form values.
+- Validate incoming API requests.
+- Use restricted browser permissions.
+- Provide transparent explanations for detected risks.
 
-## 🔌 Backend API
+## 🛣️ Future Plans
 
-### Health Check
+- [ ] Integrate a trained machine-learning model.
+- [ ] Improve zero-day phishing detection.
+- [ ] Enhance domain spoofing detection.
+- [ ] Evaluate detection accuracy and false positives.
+- [ ] Improve warning and blocking functionality.
 
-**Endpoint:** `GET /api/v1/health`
+## ⚠️ Disclaimer
 
-Purpose: Check whether the backend service is responding.
-
-Example:
-
-```bash
-curl http://127.0.0.1:5000/api/v1/health
-```
-
-The response format depends on the implemented health route.
-
-### Prediction Endpoint
-
-**Endpoint:** `POST /api/v1/predict`
-
-Purpose: Provide a structured interface for threat classification.
-
-The exact request and response schemas must be documented from the implementation. Do not assume that a particular payload or prediction model is supported until it has been implemented and tested.
-
-A future prediction response may contain fields such as:
-
-- Risk score.
-- Threat classification.
-- Contributing security signals.
-- Model or scoring version.
-
-**Privacy requirement:** Never send passwords, cookies, authentication tokens, form values, or unnecessary query parameters to the backend. Validate and sanitize requests before processing them.
-
-## 📊 Risk Scoring
-
-PhishGuard AI is designed to combine multiple security indicators into an explainable assessment.
-
-Potential signal categories include:
-
-- URL and hostname characteristics.
-- Punycode or homograph indicators.
-- Suspicious form destinations.
-- Brand and domain mismatches.
-- Other verified indicators supported by the scoring engine.
-
-Each factor should have a documented contribution, rationale, and confidence level. Allowlisting must be handled carefully because a trusted-looking domain does not guarantee that every page or resource is safe.
-
-The final score should be calibrated and evaluated against representative benign and phishing datasets before being presented as a reliable probability of compromise.
-
-**A risk score is an indicator of suspicion, not a mathematically calibrated probability unless calibration has been implemented and validated.**
-
-## 🧪 Testing and Verification
-
-Run the backend test suite:
-
-```bash
-cd backend
-pytest -v
-```
-
-Run the extension test suite:
-
-```bash
-cd extension
-npm test
-```
-
-Build the extension:
-
-```bash
-npm run build
-```
-
-Run TypeScript checks using the script defined in `package.json`. If no dedicated type-check script exists, use the locally installed compiler with the project's configuration:
-
-```bash
-npx tsc --noEmit
-```
-
-### Verification Checklist
-
-- [ ] Backend health endpoint responds successfully.
-- [ ] Backend privacy validation rejects prohibited input.
-- [ ] Extension builds without TypeScript errors.
-- [ ] Heuristic tests pass.
-- [ ] Popup displays the expected assessment.
-- [ ] Risk explanations match the evaluated signals.
-- [ ] Sensitive form values are not read or transmitted.
-- [ ] Warning and blocking behavior works as documented.
-- [ ] Benign and phishing test cases are evaluated separately.
-- [ ] False-positive and false-negative rates are measured.
-
-Only publish test counts, detection accuracy, and performance measurements that have been reproduced in the current repository.
-
-## 🔐 Privacy and Security
-
-Privacy is a core design objective of PhishGuard AI.
-
-The implementation should follow these principles:
-
-- **Data minimization:** Collect only the information required for security analysis.
-- **Credential protection:** Never read, store, or transmit password values.
-- **Local-first analysis:** Perform supported heuristic checks locally whenever possible.
-- **Input validation:** Reject unexpected fields and prohibited sensitive URL components.
-- **Restricted permissions:** Request only the browser permissions required for documented features.
-- **Transparent explanations:** Explain why a website was flagged.
-- **Safe logging:** Avoid recording credentials, tokens, personal information, or sensitive URLs.
-- **Secure development:** Keep secrets out of source control and use environment variables for configuration.
-
-These are implementation goals that should be confirmed through code review, automated tests, and runtime verification.
-
-## 🖼️ Screenshots and Demo
-
-Screenshots help developers and reviewers understand the extension quickly.
-
-Recommended repository assets:
-
-```text
-screenshots/
-├── extension-popup.png
-├── suspicious-site-warning.png
-├── safe-site-assessment.png
-└── backend-health.png
-```
-
-Once actual screenshots are available, display them in this section:
-
-### Extension Popup
-
-<!-- Add a real screenshot here -->
-`Replace with a screenshot of the extension popup.`
-
-### Suspicious Website Warning
-
-<!-- Add a real screenshot here -->
-`Replace with a screenshot of the warning interface.`
-
-### Backend Health Check
-
-<!-- Add a real screenshot here -->
-`Replace with a screenshot of the actual API response.`
-
-### Demo Video
-
-Add your actual demonstration video link here after uploading it to GitHub, YouTube, or another suitable platform.
-
-**Demo URL:** `Add your demo link here`
-
-## ⚠️ Limitations
-
-- New phishing websites may evade heuristic detection.
-- Legitimate websites may occasionally trigger false positives.
-- Allowlisting alone cannot establish that a website is safe.
-- TLS/HTTPS availability does not prove that a website is trustworthy.
-- Machine-learning functionality requires a trained, evaluated, and reproducible model.
-- Backend integration depends on the implemented API contract and configuration.
-- Browser permission restrictions can limit inspection and navigation enforcement.
-- No browser extension can guarantee detection of every phishing attack.
-
-PhishGuard AI should be treated as a defensive security aid, not a replacement for browser security protections or careful user judgment.
-
-## 🛣️ Future Improvements
-
-- [ ] Train and evaluate a reproducible phishing-classification model.
-- [ ] Integrate calibrated machine-learning inference into the backend.
-- [ ] Add adaptive trust profiles with safeguards against malicious learning.
-- [ ] Improve internationalized-domain and homograph detection.
-- [ ] Expand test coverage using benign and phishing datasets.
-- [ ] Measure false-positive rate, recall, precision, and detection latency.
-- [ ] Improve warning-page usability and accessible explanations.
-- [ ] Add configurable policy controls and user feedback.
-- [ ] Investigate Firefox compatibility and document browser-specific limitations.
-- [ ] Publish a reproducible demo video and security evaluation report.
-
-## 🤝 Contributing
-
-Contributions, bug reports, and security-focused improvements are welcome.
-
-1. Fork the repository.
-2. Create a feature branch.
-3. Make your changes.
-4. Run the relevant test suites.
-5. Commit your changes with a clear message.
-6. Open a pull request describing the change and its test results.
-
-For security vulnerabilities, avoid publishing sensitive exploit details or private user data in public issues. Use a private reporting channel if the repository provides one.
+PhishGuard AI is an educational and defensive cybersecurity project. Detection may not be perfect, and a risk score does not guarantee that a website is malicious or safe.
 
 ## 📄 License
 
-This project is intended to use the **MIT License**.
-
-Add a `LICENSE` file containing the appropriate MIT License text before claiming that the repository is officially licensed under MIT.
-
-## ⚖️ Disclaimer
-
-PhishGuard AI is intended for educational, research, and defensive cybersecurity purposes.
-
-Detection results may be inaccurate or incomplete. The authors do not guarantee that every phishing website will be detected or that every flagged website is malicious. Test security features only on systems and websites you are authorized to assess.
+MIT License — see the `LICENSE` file for details.
 
 ---
 
-<p align="center">
-  <strong>PhishGuard AI — Browse Smarter. Detect Threats. Protect Your Privacy.</strong>
-</p>
-
- 
+\<p align="center">
+&#x20; \<strong>PhishGuard AI — Smarter Detection. Safer Browsing.\</strong>
+\</p>
