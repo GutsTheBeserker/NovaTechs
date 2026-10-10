@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security Alert: Suspicious Phishing Website Detected</title>
+  <link rel="stylesheet" href="warning.css" />
+</head>
+<body>
+  <div class="warning-wrapper">
+    <div class="alert-icon">⚠️</div>
+    <h1>Deceptive Website Warning</h1>
+    <p class="subtitle">
+      PhishGuard identified active deception signals on this webpage. Submitting credentials, passwords, or personal identity information here may result in account compromise.
+    </p>
+
+    <div class="details-panel">
+      <h3>Identified Security Anomalies:</h3>
+      <ul id="warning-factors">
+        <li>Cross-origin password submission or credential harvesting destination.</li>
+        <li>Discrepancy between institutional brand name and actual registrar domain.</li>
+        <li>Unverified hostname or abnormal lexical structure.</li>
+      </ul>
+    </div>
+
+    <div class="actions-panel">
+      <button id="go-back-btn" class="primary-btn">Leave Website Safely (Recommended)</button>
+      <button id="proceed-btn" class="ghost-btn">Proceed Anyway (Unsafe)</button>
+    </div>
+  </div>
+  <script type="module" src="/dist/warning/warning.js"></script>
+</body>
+</html>

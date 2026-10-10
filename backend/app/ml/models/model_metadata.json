@@ -1,0 +1,417 @@
+{
+  "model_metadata_version": "1.0.0",
+  "created_at_utc": "2026-10-10T06:10:34.400213+00:00",
+  "algorithm": "PhishingLogisticClassifier",
+  "hyperparameters": {
+    "C": 1.0,
+    "max_iter": 300,
+    "solver": "L-BFGS-B",
+    "regularization": "L2 (Ridge)"
+  },
+  "pipeline_stages": [
+    "StandardScaler",
+    "PhishingLogisticClassifier"
+  ],
+  "dataset": {
+    "source": "Vrban\u010di\u010d et al. (2020) Data in Brief Benchmark",
+    "citation": "A full dataset of phishing websites, Data in Brief 32:106111",
+    "license": "CC BY 4.0",
+    "raw_samples": 58645,
+    "duplicates_removed": 32335,
+    "training_samples": 21048,
+    "test_samples": 5262
+  },
+  "metrics": {
+    "accuracy": 0.7643,
+    "precision": 0.9451,
+    "recall": 0.7522,
+    "f1_score": 0.8377,
+    "roc_auc": 0.8614,
+    "false_positive_rate": 0.1845,
+    "confusion_matrix": {
+      "true_negatives": 822,
+      "false_positives": 186,
+      "false_negatives": 1054,
+      "true_positives": 3200
+    }
+  },
+  "features": {
+    "total_count": 40,
+    "feature_names": [
+      "qty_dot_url",
+      "qty_hyphen_url",
+      "qty_underline_url",
+      "qty_slash_url",
+      "qty_questionmark_url",
+      "qty_equal_url",
+      "qty_at_url",
+      "qty_and_url",
+      "qty_exclamation_url",
+      "qty_space_url",
+      "qty_tilde_url",
+      "qty_comma_url",
+      "qty_plus_url",
+      "qty_asterisk_url",
+      "qty_hashtag_url",
+      "qty_dollar_url",
+      "qty_percent_url",
+      "qty_tld_url",
+      "length_url",
+      "qty_dot_domain",
+      "qty_hyphen_domain",
+      "qty_underline_domain",
+      "qty_slash_domain",
+      "qty_questionmark_domain",
+      "qty_equal_domain",
+      "qty_at_domain",
+      "qty_and_domain",
+      "qty_exclamation_domain",
+      "qty_space_domain",
+      "qty_tilde_domain",
+      "qty_comma_domain",
+      "qty_plus_domain",
+      "qty_asterisk_domain",
+      "qty_hashtag_domain",
+      "qty_dollar_domain",
+      "qty_percent_domain",
+      "qty_vowels_domain",
+      "domain_length",
+      "domain_in_ip",
+      "server_client_domain"
+    ],
+    "feature_importances": [
+      {
+        "rank": 1,
+        "feature": "length_url",
+        "coefficient": 2.06,
+        "importance_percent": 15.15,
+        "correlation": "positive_phishing_indicator",
+        "description": "Total character length of the full URL"
+      },
+      {
+        "rank": 2,
+        "feature": "qty_at_url",
+        "coefficient": 1.9011,
+        "importance_percent": 13.98,
+        "correlation": "positive_phishing_indicator",
+        "description": "Presence of '@' character in URL (credential obfuscation)"
+      },
+      {
+        "rank": 3,
+        "feature": "qty_dot_domain",
+        "coefficient": -1.4947,
+        "importance_percent": 10.99,
+        "correlation": "negative_benign_indicator",
+        "description": "Quantity of dots ('.') in domain name (subdomain nesting)"
+      },
+      {
+        "rank": 4,
+        "feature": "qty_hyphen_url",
+        "coefficient": -0.9536,
+        "importance_percent": 7.01,
+        "correlation": "negative_benign_indicator",
+        "description": "Quantity of hyphens ('-') across the URL"
+      },
+      {
+        "rank": 5,
+        "feature": "qty_slash_url",
+        "coefficient": 0.9354,
+        "importance_percent": 6.88,
+        "correlation": "positive_phishing_indicator",
+        "description": "Quantity of forward slashes ('/') in the URL"
+      },
+      {
+        "rank": 6,
+        "feature": "domain_length",
+        "coefficient": 0.8472,
+        "importance_percent": 6.23,
+        "correlation": "positive_phishing_indicator",
+        "description": "Character length of the hostname / domain"
+      },
+      {
+        "rank": 7,
+        "feature": "qty_dot_url",
+        "coefficient": 0.7935,
+        "importance_percent": 5.84,
+        "correlation": "positive_phishing_indicator",
+        "description": "Quantity of dots ('.') across the entire URL"
+      },
+      {
+        "rank": 8,
+        "feature": "qty_asterisk_url",
+        "coefficient": 0.6759,
+        "importance_percent": 4.97,
+        "correlation": "positive_phishing_indicator",
+        "description": "Quantity of asterisks ('*') in URL"
+      },
+      {
+        "rank": 9,
+        "feature": "qty_percent_url",
+        "coefficient": -0.4612,
+        "importance_percent": 3.39,
+        "correlation": "negative_benign_indicator",
+        "description": "Quantity of percent-encoded sequences ('%')"
+      },
+      {
+        "rank": 10,
+        "feature": "qty_dollar_url",
+        "coefficient": 0.4509,
+        "importance_percent": 3.32,
+        "correlation": "positive_phishing_indicator",
+        "description": "Quantity of dollar signs ('$') in URL"
+      },
+      {
+        "rank": 11,
+        "feature": "qty_hyphen_domain",
+        "coefficient": 0.3749,
+        "importance_percent": 2.76,
+        "correlation": "positive_phishing_indicator",
+        "description": "Quantity of hyphens ('-') in domain name"
+      },
+      {
+        "rank": 12,
+        "feature": "qty_space_url",
+        "coefficient": 0.341,
+        "importance_percent": 2.51,
+        "correlation": "positive_phishing_indicator",
+        "description": "Quantity of whitespace characters in URL"
+      },
+      {
+        "rank": 13,
+        "feature": "qty_underline_url",
+        "coefficient": -0.2977,
+        "importance_percent": 2.19,
+        "correlation": "negative_benign_indicator",
+        "description": "Quantity of underscores ('_') in the URL"
+      },
+      {
+        "rank": 14,
+        "feature": "domain_in_ip",
+        "coefficient": 0.2799,
+        "importance_percent": 2.06,
+        "correlation": "positive_phishing_indicator",
+        "description": "Binary indicator if hostname is an IPv4 or IPv6 address literal"
+      },
+      {
+        "rank": 15,
+        "feature": "qty_comma_url",
+        "coefficient": -0.2615,
+        "importance_percent": 1.92,
+        "correlation": "negative_benign_indicator",
+        "description": "Quantity of commas (',') in URL"
+      },
+      {
+        "rank": 16,
+        "feature": "qty_tld_url",
+        "coefficient": 0.2305,
+        "importance_percent": 1.69,
+        "correlation": "positive_phishing_indicator",
+        "description": "Count of top-level domain occurrences in URL path/subdomains"
+      },
+      {
+        "rank": 17,
+        "feature": "qty_and_url",
+        "coefficient": -0.2135,
+        "importance_percent": 1.57,
+        "correlation": "negative_benign_indicator",
+        "description": "Quantity of ampersands ('&') in query string"
+      },
+      {
+        "rank": 18,
+        "feature": "qty_vowels_domain",
+        "coefficient": -0.1942,
+        "importance_percent": 1.43,
+        "correlation": "negative_benign_indicator",
+        "description": "Count of vowel characters ('a,e,i,o,u') in domain"
+      },
+      {
+        "rank": 19,
+        "feature": "qty_underline_domain",
+        "coefficient": 0.1884,
+        "importance_percent": 1.39,
+        "correlation": "positive_phishing_indicator",
+        "description": "Quantity of underscores ('_') in domain name"
+      },
+      {
+        "rank": 20,
+        "feature": "qty_hashtag_url",
+        "coefficient": 0.1815,
+        "importance_percent": 1.33,
+        "correlation": "positive_phishing_indicator",
+        "description": "Quantity of hash symbols ('#') in URL"
+      },
+      {
+        "rank": 21,
+        "feature": "qty_plus_url",
+        "coefficient": -0.1195,
+        "importance_percent": 0.88,
+        "correlation": "negative_benign_indicator",
+        "description": "Quantity of plus signs ('+') in URL"
+      },
+      {
+        "rank": 22,
+        "feature": "qty_exclamation_url",
+        "coefficient": -0.1052,
+        "importance_percent": 0.77,
+        "correlation": "negative_benign_indicator",
+        "description": "Quantity of exclamation marks ('!') in URL"
+      },
+      {
+        "rank": 23,
+        "feature": "qty_tilde_url",
+        "coefficient": -0.0783,
+        "importance_percent": 0.58,
+        "correlation": "negative_benign_indicator",
+        "description": "Quantity of tildes ('~') in URL path"
+      },
+      {
+        "rank": 24,
+        "feature": "qty_at_domain",
+        "coefficient": 0.0285,
+        "importance_percent": 0.21,
+        "correlation": "positive_phishing_indicator",
+        "description": "'@' symbol within the domain portion"
+      },
+      {
+        "rank": 25,
+        "feature": "server_client_domain",
+        "coefficient": -0.0209,
+        "importance_percent": 0.15,
+        "correlation": "negative_benign_indicator",
+        "description": "Binary indicator if domain contains 'server' or 'client' keyword"
+      },
+      {
+        "rank": 26,
+        "feature": "qty_plus_domain",
+        "coefficient": 0.0174,
+        "importance_percent": 0.13,
+        "correlation": "positive_phishing_indicator",
+        "description": "Plus signs in the domain portion"
+      },
+      {
+        "rank": 27,
+        "feature": "qty_equal_url",
+        "coefficient": 0.0149,
+        "importance_percent": 0.11,
+        "correlation": "positive_phishing_indicator",
+        "description": "Quantity of equal signs ('=') in query parameters"
+      },
+      {
+        "rank": 28,
+        "feature": "qty_questionmark_domain",
+        "coefficient": -0.0134,
+        "importance_percent": 0.1,
+        "correlation": "negative_benign_indicator",
+        "description": "Question marks present in the domain portion"
+      },
+      {
+        "rank": 29,
+        "feature": "qty_percent_domain",
+        "coefficient": -0.0115,
+        "importance_percent": 0.08,
+        "correlation": "negative_benign_indicator",
+        "description": "Percent signs in the domain portion"
+      },
+      {
+        "rank": 30,
+        "feature": "qty_and_domain",
+        "coefficient": -0.0108,
+        "importance_percent": 0.08,
+        "correlation": "negative_benign_indicator",
+        "description": "Ampersands present in the domain portion"
+      },
+      {
+        "rank": 31,
+        "feature": "qty_hashtag_domain",
+        "coefficient": -0.0099,
+        "importance_percent": 0.07,
+        "correlation": "negative_benign_indicator",
+        "description": "Hash symbols in the domain portion"
+      },
+      {
+        "rank": 32,
+        "feature": "qty_dollar_domain",
+        "coefficient": 0.0077,
+        "importance_percent": 0.06,
+        "correlation": "positive_phishing_indicator",
+        "description": "Dollar signs in the domain portion"
+      },
+      {
+        "rank": 33,
+        "feature": "qty_comma_domain",
+        "coefficient": -0.0056,
+        "importance_percent": 0.04,
+        "correlation": "negative_benign_indicator",
+        "description": "Comma characters in the domain portion"
+      },
+      {
+        "rank": 34,
+        "feature": "qty_space_domain",
+        "coefficient": -0.0056,
+        "importance_percent": 0.04,
+        "correlation": "negative_benign_indicator",
+        "description": "Whitespace characters in the domain portion"
+      },
+      {
+        "rank": 35,
+        "feature": "qty_equal_domain",
+        "coefficient": -0.0051,
+        "importance_percent": 0.04,
+        "correlation": "negative_benign_indicator",
+        "description": "Equal signs present in the domain portion"
+      },
+      {
+        "rank": 36,
+        "feature": "qty_exclamation_domain",
+        "coefficient": 0.0035,
+        "importance_percent": 0.03,
+        "correlation": "positive_phishing_indicator",
+        "description": "Exclamation points in the domain portion"
+      },
+      {
+        "rank": 37,
+        "feature": "qty_tilde_domain",
+        "coefficient": -0.0027,
+        "importance_percent": 0.02,
+        "correlation": "negative_benign_indicator",
+        "description": "Tilde characters in the domain portion"
+      },
+      {
+        "rank": 38,
+        "feature": "qty_questionmark_url",
+        "coefficient": -0.0016,
+        "importance_percent": 0.01,
+        "correlation": "negative_benign_indicator",
+        "description": "Quantity of question marks ('?') in the URL"
+      },
+      {
+        "rank": 39,
+        "feature": "qty_slash_domain",
+        "coefficient": 0.0006,
+        "importance_percent": 0.0,
+        "correlation": "positive_phishing_indicator",
+        "description": "Quantity of slashes ('/') within the domain portion"
+      },
+      {
+        "rank": 40,
+        "feature": "qty_asterisk_domain",
+        "coefficient": -0.0001,
+        "importance_percent": 0.0,
+        "correlation": "negative_benign_indicator",
+        "description": "Asterisks in the domain portion"
+      }
+    ]
+  },
+  "artifact": {
+    "filename": "phishing_model.joblib",
+    "size_bytes": 1766,
+    "sha256": "bb80ca1ff53b064b55c3bcd9dc4c8d16b1ade24951b3e4557ef63dc7ecd17dc0"
+  },
+  "limitations_and_ethics": [
+    "ML model analyzes 40 URL and domain topological features exclusively.",
+    "Model does NOT evaluate page content, DOM, HTML, or visual layout.",
+    "Backend never performs server-side page fetching or DNS queries.",
+    "Zero PII, passwords, or query string secrets are received or retained."
+  ],
+  "training_duration_seconds": 0.94
+}

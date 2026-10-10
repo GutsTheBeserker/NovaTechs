@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishGuard Active Scanner</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup-container" role="region" aria-label="PhishGuard Security Scanner">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-area">
+        <span class="shield-icon" aria-hidden="true">🛡️</span>
+        <div>
+          <h1>PhishGuard</h1>
+          <span class="tagline">Adaptive Phishing Protection</span>
+        </div>
+      </div>
+      <span id="badge-pill" class="badge-pill badge-idle" role="status" aria-live="polite">INITIALIZING</span>
+    </header>
+
+    <!-- Top Action & Domain Bar -->
+    <section class="domain-bar" aria-labelledby="domain-label">
+      <div class="domain-details">
+        <span id="domain-label" class="label">CURRENT HOSTNAME</span>
+        <div id="target-domain" class="domain-text">Detecting active tab...</div>
+        <div id="inst-badge" class="institutional-badge hidden">✓ Verified Institution</div>
+      </div>
+      <button id="rescan-btn" class="rescan-btn" aria-label="Scan or Rescan Website">
+        <span class="btn-icon" aria-hidden="true">🔄</span>
+        <span id="rescan-text">Scan</span>
+      </button>
+    </section>
+
+    <!-- Active Scanning Progress Indicator -->
+    <div id="scanning-indicator" class="scanning-indicator hidden" role="progressbar" aria-label="Scanning webpage structures">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="scan-status-text">
+        <strong>Analyzing website security signals...</strong>
+        <span>Inspecting URL structure, forms, and resource origins</span>
+      </div>
+    </div>
+
+    <!-- Restricted Scheme Banner (Internal browser pages) -->
+    <div id="restricted-box" class="restricted-box hidden" role="alert">
+      <span class="restricted-icon" aria-hidden="true">🔒</span>
+      <div>
+        <strong>Restricted Browser Page</strong>
+        <p id="restricted-desc">Internal system pages (such as chrome:// or local files) cannot be scanned.</p>
+      </div>
+    </div>
+
+    <!-- Main Results Container (Hidden while loading/unsupported) -->
+    <div id="results-container" class="results-container hidden">
+      <!-- Main Score Card -->
+      <section class="score-card" aria-label="Risk Score">
+        <div class="gauge-wrapper">
+          <div id="score-circle" class="score-circle">
+            <span id="score-number">--</span>
+            <span class="score-label">/ 100</span>
+          </div>
+        </div>
+        <div class="verdict-summary">
+          <span class="label">COMPOSITE RISK RATING</span>
+          <div id="risk-tier-text" class="risk-tier-title">INITIALIZING</div>
+          <div id="engine-source-badge" class="engine-source-badge">Local Heuristics</div>
+          <div id="scan-timestamp" class="scan-timestamp">Timestamp: --</div>
+        </div>
+      </section>
+
+      <!-- Engine Breakdown Card -->
+      <section id="engine-breakdown-card" class="engine-breakdown-card" aria-label="Engine Scoring Breakdown">
+        <div class="breakdown-header">
+          <span class="breakdown-label">ANALYSIS ENGINE</span>
+          <strong id="engine-mode-name">Local Engine Only</strong>
+        </div>
+        <div id="breakdown-scores" class="breakdown-scores">
+          <span id="breakdown-rule-score" class="score-pill">Rules: -- / 100</span>
+          <span id="breakdown-ml-score" class="score-pill ml-pill hidden">ML: -- / 100</span>
+        </div>
+      </section>
+
+      <!-- Adaptive Trust Profile & Security Properties Card -->
+      <section id="trust-profile-card" class="trust-profile-card" aria-label="Domain Trust Profile">
+        <div class="trust-profile-header">
+          <span class="trust-profile-label">DOMAIN TRUST BASELINE</span>
+          <span id="trust-profile-status" class="trust-status-pill status-learning">Learning</span>
+        </div>
+        <div id="trust-profile-info" class="trust-profile-info">
+          <span id="trust-observation-text">Observed: 1 visit (Baseline requires 3+)</span>
+          <div id="trust-drift-alert" class="trust-drift-alert hidden">
+            <strong>⚠️ Behavioral Drift Detected</strong>
+            <p id="trust-drift-desc"></p>
+          </div>
+        </div>
+        <div class="trust-footer-actions">
+          <button id="clear-profiles-btn" class="clear-profiles-btn" aria-label="Clear All Stored Domain Baselines">
+            Clear Stored Baselines
+          </button>
+          <span id="clear-status-msg" class="clear-status-msg hidden">Cleared</span>
+        </div>
+      </section>
+
+
+      <!-- Recommendation Banner -->
+      <section id="recommendation-box" class="recommendation-box" role="region" aria-label="Security Recommendation">
+        <span class="rec-icon" aria-hidden="true">ℹ️</span>
+        <span id="recommendation-text">Analyzing page structures...</span>
+      </section>
+
+      <!-- Explainability Factors Section -->
+      <section class="factors-section" aria-labelledby="factors-heading">
+        <h2 id="factors-heading">Security Signals & Evidence</h2>
+        <div id="factors-list" class="factors-list" role="list">
+          <div class="empty-factors">No suspicious anomalies identified on this website.</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span id="latency-text">Scan latency: <strong id="latency-val">-- ms</strong></span>
+      <button id="view-warning-btn" class="warning-btn hidden" aria-label="View Detailed Security Alert">
+        View Alert
+      </button>
+    </footer>
+  </div>
+  <script type="module" src="/dist/popup/popup.js"></script>
+</body>
+</html>
