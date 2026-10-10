@@ -10,6 +10,7 @@ import {
   DOMFeatureVector,
   ExternalResourceAnalysis,
   RiskTier,
+  ScanStatus,
   SecurityVerdict,
   SSLSecuritySignals,
   TabNavigationRecord,
@@ -31,6 +32,7 @@ import { isRestrictedScheme } from './validators.js';
 import { INSTITUTIONAL_ALLOWLIST } from './constants.js';
 import { analyzeSSLSecurity } from './ssl_analyzer.js';
 import { analyzeExternalResources } from './resource_analyzer.js';
+import { matchTrustedDomain } from './trusted_domains.js';
 
 export interface ScoringInput {
   url: string;
@@ -214,14 +216,44 @@ export class PhishingRiskEngine {
         'Partial evaluation: DOM structural inspection was not available. Verdict reflects URL and domain signals only.';
     }
 
-    // 2. URL Analysis (use provided or execute fresh)
+    // 2. Verified Official Domain Matching (DNS label boundary checks)
+    const trustedEntry = matchTrustedDomain(hostname);
+    const isInstitutional =
+      Boolean(trustedEntry) ||
+      input.isInstitutionalOverride ||
+      INSTITUTIONAL_ALLOWLIST.has(baseDomain) ||
+      INSTITUTIONAL_ALLOWLIST.has(hostname) ||
+      hostname.endsWith('.edu');
+
+    // 3. URL Analysis (use provided or execute fresh)
     const urlAnalysis = input.urlAnalysis || analyzeUrl(rawUrl);
 
-    // 3. Collect and Deduplicate Indicators
+    // 4. Collect and Deduplicate Indicators
     const collector = new IndicatorCollector();
+
+    // Baseline Score Assignment:
+    // - Verified official domains receive a LOW RISK baseline (0 points)
+    // - Genuinely unfamiliar / unknown domains receive a MEDIUM RISK baseline (30 points)
+    let baselinePoints = 0;
+    if (!isInstitutional) {
+      baselinePoints = this.config.unknownDomainBaseline; // 30 (MEDIUM tier)
+      collector.add({
+        id: 'domain-unfamiliar-baseline',
+        category: 'URL',
+        severity: 'LOW',
+        factor: 'UNFAMILIAR_DOMAIN_BASELINE',
+        scoreImpact: this.config.unknownDomainBaseline,
+        description: 'Domain is not in the verified official domains registry; evaluated with medium-risk baseline.',
+        reason: 'Unfamiliar domains warrant cautious verification before entering sensitive information.',
+        evidence: `Host: ${hostname}`,
+      });
+    } else {
+      baselinePoints = this.config.trustBonuses.trustedDomainBaseline; // 0 (LOW tier)
+    }
+
     collector.addAll(urlAnalysis.indicators);
 
-    // 4. SSL/TLS Signals Analysis
+    // 5. SSL/TLS Signals Analysis
     const sslSignals =
       input.sslSignals !== undefined
         ? input.sslSignals
@@ -230,7 +262,7 @@ export class PhishingRiskEngine {
       collector.addAll(sslSignals.signals);
     }
 
-    // 5. Evaluate DOM Signals (if present)
+    // 6. Evaluate DOM Signals (if present)
     if (domFeatures) {
       this.evaluateDOMSignals(domFeatures, hostname, collector);
 
@@ -244,12 +276,12 @@ export class PhishingRiskEngine {
       }
     }
 
-    // 6. Navigation and Redirect Indicators
+    // 7. Navigation and Redirect Indicators
     if (input.navigationRecord && input.navigationRecord.indicators) {
       collector.addAll(input.navigationRecord.indicators);
     }
 
-    // 7. Trust Profile Behavioral Drift Indicators
+    // 8. Trust Profile Behavioral Drift Indicators
     if (input.trustProfileDrift && input.trustProfileDrift.indicators) {
       collector.addAll(input.trustProfileDrift.indicators);
     }
@@ -257,8 +289,8 @@ export class PhishingRiskEngine {
     const allIndicators = collector.getIndicators();
     const duplicateCount = collector.getDuplicateCount();
 
-    // 8. Categorize and Tally Points with Anti-Double-Counting and Category Caps
-    let rawTotalPoints = this.config.baselineScore;
+    // 9. Categorize and Tally Points with Anti-Double-Counting and Category Caps
+    let rawTotalPoints = baselinePoints;
     let hasStrongIndicator = false;
     let strongCount = 0;
     let weakCount = 0;
@@ -321,18 +353,22 @@ export class PhishingRiskEngine {
       if (isStrong) {
         categoryPointsStrong[ind.category] += effectiveImpact;
       } else {
-        categoryPointsWeak[ind.category] += effectiveImpact;
+        // Exclude UNFAMILIAR_DOMAIN_BASELINE from categoryPointsWeak.URL so it does not collide with maxUrlContextualCap
+        if (ind.factor !== 'UNFAMILIAR_DOMAIN_BASELINE') {
+          categoryPointsWeak[ind.category] += effectiveImpact;
+        }
       }
       categoryPoints[ind.category] += effectiveImpact;
       rawTotalPoints += effectiveImpact;
     });
 
-    // 9. Apply Category Caps strictly to Contextual/Weak Heuristics
+    // 10. Apply Category Caps strictly to Contextual/Weak Heuristics
     const urlWeakCapped = Math.min(this.config.categoryCaps.maxUrlContextualCap, categoryPointsWeak.URL);
     const domWeakCapped = Math.min(this.config.categoryCaps.maxDomContextualCap, categoryPointsWeak.DOM);
 
-    // Calculate capped total: strong attack vectors + capped weak heuristics
+    // Calculate capped total: baseline points + strong attack vectors + capped weak heuristics
     let cappedPoints =
+      baselinePoints +
       categoryPointsStrong.URL +
       urlWeakCapped +
       categoryPointsStrong.DOM +
@@ -345,38 +381,51 @@ export class PhishingRiskEngine {
       categoryPoints.REDIRECT +
       categoryPoints.ML_TOPOLOGICAL;
 
-    // 7. Weak-Signal High-Risk Prevention Safeguard
-    // If NO strong indicator is present, weak heuristics alone cannot trigger HIGH risk (capped at 59)
+    // 11. Weak-Signal High-Risk Prevention Safeguard
+    // If NO strong indicator is present, weak heuristics alone cannot trigger HIGH risk (capped at mediumMax, e.g. 59)
     if (this.config.requireStrongIndicatorForHighRisk && !hasStrongIndicator) {
       if (cappedPoints >= this.config.thresholds.highMin) {
         cappedPoints = this.config.thresholds.mediumMax; // Cap at 59
       }
     }
 
-    // 8. Institutional Allowlist & Trust Deductions
-    const isInstitutional =
-      input.isInstitutionalOverride ||
-      INSTITUTIONAL_ALLOWLIST.has(baseDomain) ||
-      hostname.endsWith('.edu') ||
-      INSTITUTIONAL_ALLOWLIST.has(hostname);
-
+    // 12. Institutional Trust Deductions
     let trustDeduction = 0;
     if (isInstitutional) {
-      trustDeduction = this.config.trustBonuses.institutionalTrustBonus;
-      cappedPoints = Math.max(0, cappedPoints - trustDeduction);
-
-      // Unless critical homoglyph or known threat feed match occurs, cap institutional sites at LOW tier
+      // Unless critical attack vector occurs (compromise, homoglyph, threat match, cross-origin form), cap institutional sites at LOW tier
       const hasCriticalOverride = allIndicators.some(
-        (i) => i.factor === 'HOMOGRAPH_PUNYCODE_SPOOF' || i.factor === 'KNOWN_THREAT_INTELLIGENCE_MATCH'
+        (i) =>
+          i.severity === 'CRITICAL' ||
+          i.factor === 'HOMOGRAPH_PUNYCODE_SPOOF' ||
+          i.factor === 'KNOWN_THREAT_INTELLIGENCE_MATCH' ||
+          i.factor === 'CROSS_ORIGIN_CREDENTIAL_FORM'
       );
-      if (!hasCriticalOverride && cappedPoints > this.config.trustBonuses.maxScoreForInstitutional) {
-        cappedPoints = this.config.trustBonuses.maxScoreForInstitutional; // Capped at 29
+      if (!hasCriticalOverride) {
+        trustDeduction = this.config.trustBonuses.institutionalTrustBonus;
+        cappedPoints = Math.max(0, cappedPoints - trustDeduction);
+        if (cappedPoints > this.config.trustBonuses.maxScoreForInstitutional) {
+          cappedPoints = this.config.trustBonuses.maxScoreForInstitutional; // Capped at 29
+        }
       }
     }
 
-    // 9. Final Score Normalization [0, 100]
+    // 13. Final Score Normalization [0, 100] and Tier Classification
     const finalScore = Math.max(0, Math.min(100, Math.round(cappedPoints)));
-    const riskTier = classifyRiskTier(finalScore, this.config.thresholds);
+    let riskTier: RiskTier;
+    const status: ScanStatus = isDomComplete ? 'COMPLETE' : 'INCOMPLETE';
+
+    if (!isDomComplete) {
+      if (finalScore >= this.config.thresholds.highMin) {
+        riskTier = 'HIGH';
+      } else if (finalScore >= this.config.thresholds.mediumMin) {
+        riskTier = 'MEDIUM';
+      } else {
+        // Essential DOM analysis was omitted; low scores cannot be safely declared LOW risk
+        riskTier = 'UNKNOWN';
+      }
+    } else {
+      riskTier = classifyRiskTier(finalScore, this.config.thresholds);
+    }
 
     // Sort indicators by severity impact descending for explainability
     allIndicators.sort((a, b) => b.scoreImpact - a.scoreImpact);
@@ -407,7 +456,7 @@ export class PhishingRiskEngine {
       scheme,
       riskScore: finalScore,
       riskTier,
-      status: isDomComplete ? 'COMPLETE' : 'INCOMPLETE',
+      status,
       primaryFactors: allIndicators,
       isInstitutional,
       recommendation,
@@ -439,6 +488,7 @@ export class PhishingRiskEngine {
   ): void {
     const baseDomain = extractBaseDomain(hostname);
     const isKnownInstitution =
+      matchTrustedDomain(hostname) !== null ||
       INSTITUTIONAL_ALLOWLIST.has(baseDomain) ||
       hostname.endsWith('.edu') ||
       INSTITUTIONAL_ALLOWLIST.has(hostname);
@@ -574,23 +624,27 @@ export class PhishingRiskEngine {
     isInstitutional: boolean,
     isPartial: boolean
   ): string {
-    if (isInstitutional) {
-      return 'Safe to proceed: Verified institutional or authentic Single Sign-On identity provider.';
-    }
-
     if (tier === 'HIGH') {
       const topFactor = factors[0];
       if (topFactor) {
-        return `CRITICAL RISK: Potential phishing detected due to ${topFactor.description.toLowerCase()} Do NOT submit credentials or personal data.`;
+        return `CRITICAL RISK: Potential phishing or compromise detected due to ${topFactor.description.toLowerCase()} Do NOT submit credentials or personal data.`;
       }
       return 'CRITICAL RISK: Strong deception indicators identified. Navigate away immediately.';
     }
 
+    if (tier === 'UNKNOWN' || (isPartial && tier === 'LOW')) {
+      return 'SCAN INCOMPLETE: Webpage structural inspection could not be completed. Caution advised as page content was not verified.';
+    }
+
+    if (isInstitutional) {
+      return 'SAFE: Verified institutional or authentic Single Sign-On identity provider.';
+    }
+
     if (tier === 'MEDIUM') {
       if (isPartial) {
-        return 'PROCEED WITH CAUTION: Elevated URL risk signals observed. Page structure could not be fully analyzed.';
+        return 'PROCEED WITH CAUTION: Unverified domain with partial scan. Page structure could not be fully analyzed.';
       }
-      return 'PROCEED WITH CAUTION: Elevated risk indicators identified. Verify domain spelling and certificates before entering information.';
+      return 'PROCEED WITH CAUTION: Unfamiliar domain or elevated risk indicators identified. Verify domain spelling before entering sensitive information.';
     }
 
     return 'SAFE: Page structures and domain indicators are consistent with normal legitimate websites.';

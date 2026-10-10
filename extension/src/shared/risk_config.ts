@@ -52,6 +52,7 @@ export interface CategoryCaps {
 export interface TrustBonuses {
   institutionalTrustBonus: number;
   maxScoreForInstitutional: number;
+  trustedDomainBaseline: number; // Baseline for verified official domains (0, LOW tier)
 }
 
 export interface RiskConfig {
@@ -60,6 +61,7 @@ export interface RiskConfig {
   categoryCaps: CategoryCaps;
   trustBonuses: TrustBonuses;
   baselineScore: number;
+  unknownDomainBaseline: number; // Baseline for unfamiliar/unknown domains (30, MEDIUM tier)
   correlationDampeningFactor: number;
   requireStrongIndicatorForHighRisk: boolean;
 }
@@ -106,8 +108,10 @@ export const DEFAULT_RISK_CONFIG: RiskConfig = {
   trustBonuses: {
     institutionalTrustBonus: 40,
     maxScoreForInstitutional: 29, // Caps verified institutional SSO to LOW tier (<=29)
+    trustedDomainBaseline: 0, // Verified official domains baseline (LOW: 0)
   },
   baselineScore: 0,
+  unknownDomainBaseline: 30, // Unfamiliar/unknown domains baseline (MEDIUM: 30-59)
   correlationDampeningFactor: 0.75,
   requireStrongIndicatorForHighRisk: true,
 };

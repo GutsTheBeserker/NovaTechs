@@ -3,9 +3,9 @@
  * restricted schemes, and threat intelligence configuration.
  */
 
-export const SCORE_LOW_MAX = 39;
-export const SCORE_MEDIUM_MAX = 69;
-export const SCORE_HIGH_MIN = 70;
+export const SCORE_LOW_MAX = 29;
+export const SCORE_MEDIUM_MAX = 59;
+export const SCORE_HIGH_MIN = 60;
 
 // Deterministic heuristic weights (Additive penalties)
 export const WEIGHT_PUNYCODE = 45;
@@ -27,6 +27,10 @@ export const WEIGHT_KNOWN_THREAT_MATCH = 50;
 
 // Institutional identity providers and high-trust domains (prevents false positives)
 export const INSTITUTIONAL_ALLOWLIST = new Set([
+  'youtube.com',
+  'facebook.com',
+  'wikipedia.org',
+  'ganpatuniversity.ac.in',
   'okta.com',
   'microsoftonline.com',
   'login.microsoftonline.com',
@@ -56,6 +60,8 @@ export const TARGETED_BRANDS = [
   'citibank',
   'facebook',
   'instagram',
+  'youtube',
+  'ganpatuniversity',
   'dhl',
   'fedex',
 ];

@@ -54,8 +54,44 @@ export function isIpAddress(hostname: string): boolean {
   return ipv4Regex.test(hostname) || ipv6Regex.test(hostname);
 }
 
+// Well-known multi-part second-level public suffixes
+const MULTI_PART_TLDS = new Set([
+  'ac.in',
+  'edu.in',
+  'gov.in',
+  'co.in',
+  'net.in',
+  'org.in',
+  'co.uk',
+  'ac.uk',
+  'gov.uk',
+  'org.uk',
+  'me.uk',
+  'edu.au',
+  'com.au',
+  'gov.au',
+  'org.au',
+  'co.nz',
+  'ac.nz',
+  'govt.nz',
+  'org.nz',
+  'co.jp',
+  'ne.jp',
+  'ac.jp',
+  'com.br',
+  'gov.br',
+  'edu.br',
+  'com.sg',
+  'edu.sg',
+  'gov.sg',
+  'co.za',
+  'ac.za',
+  'gov.za',
+]);
+
 /**
- * Extracts the base domain (e.g. 'sub.login.example.com' -> 'example.com').
+ * Extracts the base domain (e.g. 'sub.login.example.com' -> 'example.com',
+ * 'portal.ganpatuniversity.ac.in' -> 'ganpatuniversity.ac.in').
  */
 export function extractBaseDomain(hostname: string): string {
   let clean = hostname.toLowerCase().trim();
@@ -70,5 +106,11 @@ export function extractBaseDomain(hostname: string): string {
   }
   const parts = clean.split('.');
   if (parts.length <= 2) return clean;
+
+  const lastTwo = parts.slice(-2).join('.');
+  if (MULTI_PART_TLDS.has(lastTwo) && parts.length >= 3) {
+    return parts.slice(-3).join('.');
+  }
+
   return parts.slice(-2).join('.');
 }

@@ -167,11 +167,22 @@ describe('Multi-Signal Phishing Risk Engine (Phase 3)', () => {
       domFeatures: null,
     });
 
+    expect(result.status).toBe('INCOMPLETE');
     expect(result.scoringBreakdown.informationCompleteness).toBe(0.4);
     expect(result.scoringBreakdown.confidenceLevel).toBe('MEDIUM');
     expect(result.scoringBreakdown.uncertaintyNotes).toBeDefined();
     expect(result.scoringBreakdown.uncertaintyNotes).toContain('DOM structural inspection was not available');
-    expect(result.riskTier).toBe('LOW');
+    // Unfamiliar domain starts at medium baseline (30) with INCOMPLETE scan status
+    expect(result.riskTier).toBe('MEDIUM');
+    expect(result.riskScore).toBe(30);
+
+    // Official trusted domain with omitted DOM reports UNKNOWN tier rather than falsely claiming LOW
+    const trustedOmittedResult = engine.evaluate({
+      url: 'https://en.wikipedia.org/wiki/Test',
+      domFeatures: null,
+    });
+    expect(trustedOmittedResult.status).toBe('INCOMPLETE');
+    expect(trustedOmittedResult.riskTier).toBe('UNKNOWN');
   });
 
   // Test 6: Duplicate Indicators
@@ -226,12 +237,21 @@ describe('Multi-Signal Phishing Risk Engine (Phase 3)', () => {
     expect(normalized.features?.formActionDomains).toEqual([]);
 
     const result = engine.evaluate({
-      url: 'https://example.org/home',
+      url: 'https://en.wikipedia.org/wiki/Home',
       domFeatures: normalized.features,
     });
 
     expect(result.status).toBe('COMPLETE');
     expect(result.riskTier).toBe('LOW');
+    expect(result.riskScore).toBe(0);
+
+    const unknownResult = engine.evaluate({
+      url: 'https://unknownshop.xyz/home',
+      domFeatures: normalized.features,
+    });
+    expect(unknownResult.status).toBe('COMPLETE');
+    expect(unknownResult.riskTier).toBe('MEDIUM');
+    expect(unknownResult.riskScore).toBe(30);
   });
 
   // Test 8: Boundary Values of 29, 30, 59, 60, and 100

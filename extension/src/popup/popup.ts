@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     recBox.className = 'recommendation-box';
 
     // Tier specific presentation
-    if (verdict.status === 'INCOMPLETE' || verdict.riskTier === 'UNKNOWN') {
+    if (verdict.status === 'INCOMPLETE' || verdict.status === 'ERROR' || verdict.riskTier === 'UNKNOWN') {
       badgePill.textContent = 'INCOMPLETE';
       badgePill.classList.add('badge-incomplete');
       scoreCircle.classList.add('unknown-border');

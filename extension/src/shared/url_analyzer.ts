@@ -29,6 +29,7 @@ import {
   isIpAddress,
   sanitizeUrl,
 } from './utils.js';
+import { matchTrustedDomain } from './trusted_domains.js';
 
 /**
  * Analyzes a given URL and extracts all observable URL security signals.
@@ -218,7 +219,11 @@ export function analyzeUrl(rawUrl: string): URLAnalysisResult {
   ];
   let hasSuspiciousPathOrQuery = false;
 
-  const isTrustedInstitution = INSTITUTIONAL_ALLOWLIST.has(baseDomain);
+  const isTrustedInstitution =
+    matchTrustedDomain(hostname) !== null ||
+    INSTITUTIONAL_ALLOWLIST.has(baseDomain) ||
+    INSTITUTIONAL_ALLOWLIST.has(hostname) ||
+    hostname.endsWith('.edu');
   if (!isTrustedInstitution) {
     for (const token of sensitivePathTokens) {
       if (path.includes(token) || rawQuery.toLowerCase().includes(token)) {
